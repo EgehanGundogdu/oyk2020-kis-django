@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Post detay sayfası</title>
+</head>
+
+<body>
+    <h1>Post detay sayfası</h1>
+    <br>
+    <h2>{{post.header}}</h2>
+    <div>
+        {{post.content}}
+    </div>
+    <p>olusturuldu {{post.created}}</p>
+    <p>güncellendi {{post.updated}}</p>
+    <p>begeni sayısı{{post.liked}}</p>
+
+
+    {% if comments %}
+    <h1>bi kac yorum var</h1>
+    {% else %}
+    <h1>yok</h1>
+    {% endif %}
+
+
+</body>
+
+</html>

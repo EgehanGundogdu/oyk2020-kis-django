@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Post Listesi</title>
+</head>
+
+<body>
+
+
+    {% if posts %}
+    <h1>Postlar</h1> <br>
+    {% for post in postlar %}
+    <h1>{{post.header}}</h1> <br>
+    <div>
+        {{post.content}}
+    </div>
+    <p>yayınlanma tarihi {{post.created|date}}</p>
+    <p>güncelleme tarihi {{post.updated|date}}</p>
+
+    {% if post.draft %}
+    <p>Bu yazı taslak daha bitmemis.</p>
+    {% else %}
+    <p>Yayında!</p>
+    {% endif %}
+
+
+
+    {% endfor %}
+
+    {% else %}
+    <h1>post bulunamadı.</h1>
+    {% endif %}
+
+
+
+</body>
+
+</html>
