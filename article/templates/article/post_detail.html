@@ -41,7 +41,17 @@
 
     {% if comments %}
     <h1>bi kac yorum var</h1>
+    {% for comment in comments  %}
+    <div>
+        <p>
+            {{comment.header}}
+        </p>
+        <div>
+            {{comment.content}}
 
+        </div>
+    </div>
+    {% endfor %}
     <hr>
 
 

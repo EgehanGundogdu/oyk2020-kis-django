@@ -1,3 +1,7 @@
+from django.views.generic import DetailView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+from django.views.generic import ListView
 from article.forms import ArticleModelForm
 from article.forms import ArticleForm, CommentForm
 from django.shortcuts import render, get_object_or_404, redirect, reverse
@@ -29,9 +33,18 @@ def post_detail(request, post_id):
             form.instance.post = post
             form.save()
             messages.add_message(request, messages.SUCCESS,
-                                 'Basarıyla olusturuldu')
+                                 'Basari ile kayit edildi')
 
             return redirect('post_detail', post_id=post.id)
+
+    # if request.method == 'POST':
+    #     if form.is_valid():
+    #         form.instance.post = post
+    #         form.save()
+    #         messages.add_message(request, messages.SUCCESS,
+    #                              'Basarıyla olusturuldu')
+
+    #
 
     return render(request, 'article/post_detail.html', context)
 
@@ -87,3 +100,41 @@ def createPostMF(request):
             form.save()
             return render(request, 'article/index.html')
     return render(request, 'article/post_create.html', {'form': form})
+
+
+"""
+CLASS BASED VIEW REFACTORING
+
+
+"""
+
+
+class ArticleListView(ListView):
+    model = Post
+    template_name = 'article/post_list.html'
+    queryset = Post.objects.all()
+    context_object_name = 'posts'
+
+
+class ArticleCreateView(CreateView):
+    model = Post
+    #fields = '__all__'
+    form_class = ArticleModelForm
+    success_url = reverse_lazy('anasayfa')
+    template_name = 'article/post_create.html'
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+
+class ArticleDetailView(DetailView):
+    model = Post
+    template_name = 'article/post_detail.html'
+    pk_url_kwarg = 'post_id'
+    context_object_name = 'post'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.all()
+        return context
