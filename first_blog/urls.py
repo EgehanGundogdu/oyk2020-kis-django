@@ -22,7 +22,7 @@ urlpatterns = [
     path('anasayfa/', anasayfa, name='anasayfa'),
     path('post/<int:post_id>/', post_detail, name='post_detail'),
     path('posts/', post_list, name='post_list'),
-    path('post/create/', createPostMF, name='post_create')
+    path('post/create/', createPostMF, name='post_create') 
 
 
 ]

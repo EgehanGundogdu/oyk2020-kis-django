@@ -1,9 +1,10 @@
 from article.forms import ArticleModelForm
-from article.forms import ArticleForm
-from django.shortcuts import render, get_object_or_404
+from article.forms import ArticleForm, CommentForm
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.http import HttpResponse, Http404
 from datetime import datetime
-from article.models import Post
+from article.models import Post, Comment
+from django.contrib import messages
 # Create your views here.
 
 
@@ -13,12 +14,25 @@ def post_detail(request, post_id):
     #     post = Post.objects.get(id=pk)
     # except Post.DoesNotExist:
     #     raise Http404('bulunamadı')
+
     post = get_object_or_404(Post, id=pk, draft=False)
     comments = post.comments.all()
+    form = CommentForm(request.POST or None)
     context = {
         'post': post,
-        'comments': comments
+        'comments': comments,
+        'form': form
     }
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.instance.post = post
+            form.save()
+            messages.add_message(request, messages.SUCCESS,
+                                 'Basarıyla olusturuldu')
+
+            return redirect('post_detail', post_id=post.id)
+
     return render(request, 'article/post_detail.html', context)
 
 
@@ -71,5 +85,5 @@ def createPostMF(request):
         if form.is_valid():
             form.instance.owner = request.user
             form.save()
-            return HttpResponse('nesne yaratıldı')
+            return render(request, 'article/index.html')
     return render(request, 'article/post_create.html', {'form': form})
