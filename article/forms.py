@@ -13,15 +13,15 @@ class ArticleModelForm(forms.ModelForm):
     class Meta:
         model = Post
     # bütün fieldlar icin
-        #fields = '__all__'
+        fields = '__all__'
         # fields = ['content','header',....]
-        exclude = ['owner', 'image']
+        #exclude = ['owner', 'image']
 
-    def clean_header(self):
-        header = self.cleaned_data.get('header')
-        if Post.objects.filter(header=header).exists():
-            raise forms.ValidationError('bu baslıkta bir makale bulunmakta!')
-        return header
+    # def clean_header(self):
+    #     header = self.cleaned_data.get('header')
+    #     if Post.objects.filter(header=header).exists():
+    #         raise forms.ValidationError('bu baslıkta bir makale bulunmakta!')
+    #     return header
 
     # def clean_header(self):
     #     header = self.cleaned_data.get('header')

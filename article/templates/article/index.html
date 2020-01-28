@@ -13,6 +13,22 @@
     <span>Kullanıcı bilgisi {{request.user}}</span> <br>
 
     {{request}}
+<!--         
+        {% if request.user.is_authenticated %}
+        <p>cıkıs</p>
+{% else %}
+    <p>giris yap</p>
+        {% endif %}
+             -->
+
+
+    {% if messages %}
+
+    {% for message in messages %}
+    <p style="color:cyan">{{message}}</p>
+    {% endfor %}
+
+    {% endif %}
 
 
 

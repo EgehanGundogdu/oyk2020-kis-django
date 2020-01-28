@@ -1,3 +1,7 @@
+from django.views.generic import DeleteView
+from django.views.generic import UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import FormView
 from django.views.generic import DetailView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
@@ -9,6 +13,7 @@ from django.http import HttpResponse, Http404
 from datetime import datetime
 from article.models import Post, Comment
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 # Create your views here.
 
 
@@ -109,16 +114,18 @@ CLASS BASED VIEW REFACTORING
 """
 
 
-class ArticleListView(ListView):
+class ArticleListView(LoginRequiredMixin, ListView):
     model = Post
     template_name = 'article/post_list.html'
     queryset = Post.objects.all()
     context_object_name = 'posts'
 
 
-class ArticleCreateView(CreateView):
+class ArticleCreateView(LoginRequiredMixin, CreateView):
+    # login_url = '/admin'
     model = Post
     #fields = '__all__'
+
     form_class = ArticleModelForm
     success_url = reverse_lazy('anasayfa')
     template_name = 'article/post_create.html'
@@ -128,13 +135,51 @@ class ArticleCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ArticleDetailView(DetailView):
+class ArticleDetailView(DetailView, SuccessMessageMixin, FormView, ):
     model = Post
     template_name = 'article/post_detail.html'
     pk_url_kwarg = 'post_id'
     context_object_name = 'post'
+    form_class = CommentForm
+    success_url = reverse_lazy('anasayfa')
+    success_message = 'Basariyla yorum eklendi'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        print(self.object)
         context['comments'] = self.object.comments.all()
         return context
+
+    def form_valid(self, form):
+        # self.object = self.model.objects.get(id=self.kwargs['post_id'])
+        # self.object = self.get_object()
+        form.instance.post = self.get_object()
+        # print(self.get_object())
+        form.save()
+        return super().form_valid(form)
+
+    # def get_object(self):
+    #     obj = self.model.objects.get(title__icontains=self.kwargs['content'])
+    #     return obj
+
+
+class ArticleUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Post
+    form_class = ArticleModelForm
+    template_name = 'article/post_create.html'
+    success_url = reverse_lazy('anasayfa')
+    success_message = 'Basari ile güncellendi'
+    pk_url_kwarg = 'post_id'
+
+    # def form_valid(self, form):
+    #     form.instance.owner = self.request.user
+    #     form.save()
+    #     return super().form_valid(form)
+
+
+class ArticleDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Post
+    template_name = 'article/post_delete.html'
+    pk_url_kwarg = 'post_id'
+    success_message = 'Basari ile silindi'
+    success_url = reverse_lazy('anasayfa')
